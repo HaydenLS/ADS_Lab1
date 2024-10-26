@@ -54,7 +54,7 @@ def test_sort_base(srt_method, length_array: list, check_in_times=5, method_gen_
             array = get_random_array(n, 0, 10000)  # изменить границы по возможности
             if method_gen_arrays is not None:
                 array = method_gen_arrays(array)
-            print(f"Происходит сортировка для метода {srt_method.__name__}. Случай: {method_gen_arrays.__name__}")
+            print(f"Происходит сортировка для метода {srt_method.__name__}. Случай: {method_gen_arrays}")
             # Getting time of sort
             begin = time.time()
             result = srt_method(array)
@@ -85,18 +85,18 @@ if __name__ == "__main__":
     print(cases_dict)
     case_n = [int(i) for i in input("Какой нужен случай (через пробел): ").split()]
 
+    n_quadratic = [i for i in range(1000, 10001, 1000)]
+    n_log_n = [i for i in range(50000, 500001, 25000)]
+
     checkin_times = 3
     # ЗАДАЕМ МАССИВ С КОЛИЧЕСТВОМ ЭЛЕМЕНТОВ
     if names[n] in ("bubble_sort", "insertion_sort", "selection_sort"):
-        list_of_elements_n = [i for i in range(1000, 10001, 1000)]
+        list_of_elements_n = n_quadratic
 
     if names[n] in ("quick_sort", "merge_sort", "heap_sort"):
-        list_of_elements_n = [i for i in range(50000, 500001, 25000)]
-        if names[n] == "quick_sort":
-            list_of_elements_n = [i for i in range(50000, 500001, 50000)]
-            checkin_times = 1
+        list_of_elements_n = n_log_n
 
-    if names[n] == "shell_sort":
+    if names[n] == "shell_sort_shell":
         list_of_elements_n = [i for i in range(1000, 15001, 1000)]
 
     if names[n] == "shell_sort_hib":
@@ -121,8 +121,11 @@ if __name__ == "__main__":
                 method_gen = sorted_reverse
             case 3:
                 method_gen = None
-
+        if(name == "quick_sort"):
+            if cases_dict[tip] != "Average Case":
+                list_of_elements_n = n_quadratic
         result = test_sort_base(f_name, list_of_elements_n, 3, method_gen)
         pr.add_case(result, cases_dict[tip])
+        print(f"Для сортировки {name} добавлен случай {cases_dict[tip]}")
 
     print("Метод отработан успешно")
