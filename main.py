@@ -41,8 +41,10 @@ def linear(X, k, b, c):
     return k * X + b
 
 
-def plot_graph(name, cases, is_regession=False):
-    pt = json_work.Json_Saver(names[n])
+def plot_graph(name, cases, is_regession=False, color=None):
+    pt = json_work.Json_Saver(name)
+
+
 
     for case_index in cases:
         case = pt.get_case(cases_dict[case_index])  # Получаем нужный нам случай
@@ -53,7 +55,10 @@ def plot_graph(name, cases, is_regession=False):
 
         # Строим график
         clr = cases_color[case_index]
-        plt.plot(x, y, 'o', label=cases_dict[case_index], color=clr)
+        plt.plot(x, y, 'o', label=f"{cases_dict[case_index]}", color=clr)
+
+
+
 
         if is_regession:
             # ОПРЕДЕЛЯЕМ ТИП ФУНКЦИИ РЕГРЕССИИ В ЗАВИСИМОСТИ ОТ СЛУЧАЯ СОРТИРОВКИ
@@ -68,7 +73,7 @@ def plot_graph(name, cases, is_regession=False):
             elif "shell" in name:
                 test_func = quadratic
                 if name == "shell_sort_shell":
-                    if case_index == 2: test_func = nlogn
+                    if case_index == 0: test_func = nlogn
                     if case_index == 3: test_func = poltora
                 if name == "shell_sort_hib":
                     if case_index in (0, 1): test_func = nlogn
@@ -81,39 +86,60 @@ def plot_graph(name, cases, is_regession=False):
             param, _ = curve_fit(test_func, x, y)
             # print(f"Регрессия для метода {name} в случае будет описываться функцией {test_func.__name__}")
 
-            print(f"Для {cases_dict[case_index]} случая: a={param[0]}, b={param[1]}, c={param[2]}")
+            print(f"{test_func.__name__} Для {cases_dict[case_index]} случая: a={param[0]}, b={param[1]}, c={param[2]}")
 
             arg = test_func(x, param[0], param[1], param[2])
 
             plt.plot(x, arg, "-", label=f"Регрессия для {cases_dict[case_index]}", color=clr)
 
-    plt.xlabel('Количество элементов массива')
-    plt.ylabel('Время в секундах')
-    plt.title(name)
 
-    plt.legend()
-    plt.grid(True)
+
+
+
+
+
 
 
 # MAIN CODE
 # Выбор метода сортировки
 print("Запущен main.py")
-print("Выберите метод сторитровки: ")
+print("Выберите метод/методы сторитровки: ")
 for key, value in names.items():
     print(f"[{key}] {value}")
-n = int(input("Номер: "))
-print(names[n])
+numbers = [int(i) for i in input("Номер(а): ").split()]
+if len(numbers) == 1:
+    n = numbers[0]
+for i in numbers:
+    print(names[i])
+
+
 
 print(cases_dict)
 cases = [int(i) for i in input("Какой нужен случай (через пробел): ").split()]
 print(cases)
 
+is_on_one_graph = int(input("Выводить ли случаи на один график? 0 - Нет. 1 - Да"))
+
 is_do_regression = int(input("Делать ли регрессию? 0 - Нет. 1 - Да"))
 
-plot_graph(names[n], cases, is_do_regression)
 
-regr = "_regr" if is_do_regression else ""
-plt.savefig(f"Results/{names[n]}{regr}.png")
 
-plt.show()
+for sort_index in numbers:
+    print(f"Рисуем график для {names[sort_index]}")
 
+    plot_graph(names[sort_index], cases, is_do_regression)
+
+    print(f"График для {names[sort_index]} успешно отрисован\n")
+
+    plt.xlabel('Количество элементов массива')
+    plt.ylabel('Время в секундах')
+    plt.title(names[sort_index])
+
+
+    # Сохранение графика в файл.
+    regr = "_regr" if is_do_regression else ""
+    plt.savefig(f"Results/{names[sort_index]}{regr}.png")
+
+    plt.show()
+
+print("Графики успешно отрисованы. Конец программы.")
